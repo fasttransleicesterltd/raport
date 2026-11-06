@@ -372,7 +372,7 @@ $('unCh').onclick=function(e){
 $('unIn').oninput=function(){[].forEach.call(document.querySelectorAll('#unCh button'),function(x){x.classList.remove('on')})};
 
 /* ----- Moja tygodniowka (tylko tygodnie rozliczone przez biuro) ----- */
-function fm(x){return '£'+(Math.round(x*100)/100).toFixed(2).replace('.',',')}
+function fm(x){return '£'+Math.round(x)}
 function renderWeek(res){
   var weeks=res.weeks||[],v=res.view,h='',i=-1,n;
   for(n=0;n<weeks.length;n++)if(weeks[n].iso===res.selected)i=n;
@@ -412,7 +412,6 @@ function renderWeek(res){
       '</div><div class="dh">'+esc(d.hours)+'</div></div>';
   });
   h+='<div class="ln" style="display:flex;justify-content:space-between;padding:8px 12px;font-weight:700"><span>Week total</span><span>'+esc(v.hours)+'</span></div>';
-  if(v.cons!=null)h+='<div class="card">Average consumption this month: <b>'+v.cons.toFixed(1).replace('.',',')+' l/100 km</b></div>';
   return h;
 }
 function showVb(m){

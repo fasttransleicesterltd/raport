@@ -88,6 +88,12 @@ input,select{display:block;width:100%;margin-top:3px;padding:9px 11px;font:inher
 .dr .dh{font-weight:700;font-size:15px}
 .tag{display:inline-block;margin-top:3px;margin-right:4px;font-size:11px;font-weight:700;border-radius:6px;padding:1px 7px}
 .tg1{color:var(--ok);background:#e1f1e8}.tg2{color:#8a5a00;background:#fbefd5}
+#vm{display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.82);align-items:center;justify-content:center;padding:14px}
+#vm .bx{background:#fff;border-radius:14px;max-width:420px;width:100%;max-height:96vh;overflow:auto;padding:12px;border-top:4px solid var(--red)}
+#vm h3{margin:2px 0 4px;font-size:17px}
+#vm p{margin:0 0 8px;font-size:13px;color:var(--mut)}
+#vm video{display:block;width:100%;max-height:70vh;border-radius:10px;background:#000}
+#vm button{margin-top:10px}
 </style></head><body><main>
 <div class="hd"><svg viewBox="0 0 120 92" aria-hidden="true"><circle cx="60" cy="62" r="36" fill="none" stroke="#e8002b" stroke-width="12" stroke-dasharray="27 6 27 6 27 200" transform="rotate(197 60 62)"/><g transform="rotate(38 60 62)"><path d="M60 22 L69 56 A10 10 0 1 1 51 56 Z" fill="#e8002b"/></g><circle cx="60" cy="64" r="4" fill="none" stroke="#fff" stroke-width="2.4"/></svg><div class="wm"><b>FAST TRANS</b><span>Same day express delivery</span></div><div class="nm" id="who"></div></div>
 <div id="load" class="s" style="padding-top:30px;text-align:center">Loading…</div>
@@ -140,6 +146,7 @@ input,select{display:block;width:100%;margin-top:3px;padding:9px 11px;font:inher
 <div id="er"></div>
 <button id="send">Save</button>
 <button id="wkb" class="b">📊 My weekly pay</button>
+<button id="vidb" class="b">📹 How to use the app / Jak używać aplikacji</button>
 </div>
 
 <div id="chk" style="display:none">
@@ -552,4 +559,21 @@ $('again').onclick=function(){
   $('fz').style.display='none';$('etaBox').style.display='none';$('unBox').style.display='none';$('brBox').style.display='none';resetUn();resetBr();
   $('mil').value='';$('fuel').value='';$('cost').value='';$('eta').value='';$('tm').value=nowT();$('dt').value=today();
 };
+</script><div id="vm" role="dialog" aria-modal="true"><div class="bx">
+<h3>📹 How to use the app / Jak używać aplikacji</h3>
+<p>Watch this short video once. You can open it again any time with the 📹 button.<br>Obejrzyj raz ten krótki film. Zawsze możesz go otworzyć przyciskiem 📹.</p>
+<video id="vmv" controls playsinline preload="none" src="instrukcja.mp4"></video>
+<button id="vmc" class="b nr">Close / Zamknij</button>
+</div></div>
+<script>
+(function(){
+  function showVid(){var m=document.getElementById('vm');m.style.display='flex';}
+  function hideVid(){var m=document.getElementById('vm'),v=document.getElementById('vmv');try{v.pause()}catch(e){}m.style.display='none';}
+  document.getElementById('vidb').onclick=showVid;
+  document.getElementById('vmc').onclick=hideVid;
+  document.getElementById('vm').addEventListener('click',function(e){if(e.target.id==='vm')hideVid();});
+  var _view=view;
+  view=function(id){_view(id);if(id==='form'&&!st('ft_vid')){ss('ft_vid','1');setTimeout(showVid,400);}};
+  if(FORMSHOWN&&!st('ft_vid')){ss('ft_vid','1');showVid();}
+})();
 </script></main></body></html>

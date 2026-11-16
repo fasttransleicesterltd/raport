@@ -32,6 +32,19 @@ input,select{display:block;width:100%;margin-top:3px;padding:9px 11px;font:inher
 .g button{min-height:46px;padding:6px;font:700 15px system-ui;line-height:1.15;border-radius:12px;border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.06)}
 .g button[data-k="Start pracy"]{border-left:6px solid var(--ok)}
 .g button[data-k="Koniec pracy"]{border-left:6px solid var(--red)}
+.g button[data-k="OTHER"]{background:linear-gradient(135deg,#6d4cff,#4a2fd1);border-color:#4a2fd1;color:#fff;min-height:46px}
+.g button.on[data-k="OTHER"]{background:#fff;color:#4a2fd1;border:4px solid #4a2fd1;box-shadow:0 0 0 4px rgba(109,76,255,.35)}
+#vm{display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.82);align-items:center;justify-content:center;padding:14px}
+#vm .bx{background:#fff;border-radius:14px;max-width:420px;width:100%;max-height:96vh;overflow:auto;padding:12px;border-top:4px solid var(--red)}
+#vm h3{margin:2px 0 4px;font-size:17px}
+#vm p{margin:0 0 8px;font-size:13px;color:var(--mut)}
+#vm video{display:block;width:100%;max-height:70vh;border-radius:10px;background:#000}
+#vm button{margin-top:10px}
+.fc{margin:0 0 8px;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:14px}
+.fc b{font-size:15px}
+.fc.w1{background:#fff7e0;border-color:#f0c27a}.fc.w2{background:#ffeede;border-color:#f19a1a}.fc.w3{background:#fbe3e0;border-color:#e0786c}
+#otBox .c button.on{background:#4a2fd1;border-color:#4a2fd1}
+#otInfo{font-size:13px;color:var(--mut);margin:2px 0 8px}
 .g button[data-k="Start prywatny"],.g button[data-k="Koniec prywatny"]{background:linear-gradient(135deg,#6d4cff,#4a2fd1);border-color:#4a2fd1;color:#fff;min-height:46px}
 .g button.on[data-k="Start prywatny"],.g button.on[data-k="Koniec prywatny"]{background:#fff;color:#4a2fd1;border:4px solid #4a2fd1;box-shadow:0 0 0 4px rgba(109,76,255,.35)}
 .g button.on[data-k="Start prywatny"]::before,.g button.on[data-k="Koniec prywatny"]::before{content:'✔ SELECTED';display:block;font-size:11px;letter-spacing:.06em}
@@ -88,12 +101,6 @@ input,select{display:block;width:100%;margin-top:3px;padding:9px 11px;font:inher
 .dr .dh{font-weight:700;font-size:15px}
 .tag{display:inline-block;margin-top:3px;margin-right:4px;font-size:11px;font-weight:700;border-radius:6px;padding:1px 7px}
 .tg1{color:var(--ok);background:#e1f1e8}.tg2{color:#8a5a00;background:#fbefd5}
-#vm{display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.82);align-items:center;justify-content:center;padding:14px}
-#vm .bx{background:#fff;border-radius:14px;max-width:420px;width:100%;max-height:96vh;overflow:auto;padding:12px;border-top:4px solid var(--red)}
-#vm h3{margin:2px 0 4px;font-size:17px}
-#vm p{margin:0 0 8px;font-size:13px;color:var(--mut)}
-#vm video{display:block;width:100%;max-height:70vh;border-radius:10px;background:#000}
-#vm button{margin-top:10px}
 </style></head><body><main>
 <div class="hd"><svg viewBox="0 0 120 92" aria-hidden="true"><circle cx="60" cy="62" r="36" fill="none" stroke="#e8002b" stroke-width="12" stroke-dasharray="27 6 27 6 27 200" transform="rotate(197 60 62)"/><g transform="rotate(38 60 62)"><path d="M60 22 L69 56 A10 10 0 1 1 51 56 Z" fill="#e8002b"/></g><circle cx="60" cy="64" r="4" fill="none" stroke="#fff" stroke-width="2.4"/></svg><div class="wm"><b>FAST TRANS</b><span>Same day express delivery</span></div><div class="nm" id="who"></div></div>
 <div id="load" class="s" style="padding-top:30px;text-align:center">Loading…</div>
@@ -109,9 +116,17 @@ input,select{display:block;width:100%;margin-top:3px;padding:9px 11px;font:inher
 
 <div id="form" style="display:none">
 <div id="stat"><i></i><div id="statT"></div></div>
+<div id="fuelCard" class="fc" style="display:none"></div>
 <label>Vehicle<span id="vBox"></span></label>
 <button id="chkb" class="b ck">🔧 Vehicle check</button>
 <div class="g" id="ev"></div>
+<div id="otBox" style="display:none;margin:0 0 6px">
+<label style="margin-bottom:4px">What kind of use?</label>
+<div class="c" id="otKind"><button data-o="prywatny">Private use</button><button data-o="serwis">Service</button><button data-o="MOT">MOT</button><button data-o="odstawienie">Vehicle drop-off (before holiday)</button></div>
+<label style="margin-bottom:4px">Start or end?</label>
+<div class="c" id="otPh"><button data-p="Start">Start</button><button data-p="Koniec">End</button></div>
+<div id="otInfo"></div>
+</div>
 <div id="ckst" style="display:none;margin:10px 0;padding:10px 12px;border-radius:10px;font-size:15px"></div>
 <div class="r">
 <label>Date<input type="date" id="dt"></label>
@@ -205,10 +220,9 @@ var E=[
  {k:'Koniec przerwy',b:'☕ End break'},
  {k:'Przerwa',b:'⏱ Take a break<br><span style="font-weight:400;font-size:12px">choose how many minutes</span>',brk:1},
  {k:'Tankowanie',b:'⛽ Refuelling',mil:1,fuel:1},
- {k:'Start prywatny',b:'🏠 Start private use<br><span style="font-weight:400;font-size:12px">mileage only</span>',mil:1},
- {k:'Koniec prywatny',b:'🏠 End private use<br><span style="font-weight:400;font-size:12px">mileage only</span>',mil:1}
+ {k:'OTHER',b:'🔀 Other use<br><span style="font-weight:400;font-size:12px">private · service · MOT · drop-off</span>',mil:1}
 ];
-var LBL={'Start pracy':'Start work','Koniec pracy':'End work','Początek przerwy':'Start break','Koniec przerwy':'End break','Przerwa':'Break','Tankowanie':'Refuelling','Start prywatny':'Start private use','Koniec prywatny':'End private use'};
+var LBL={'Start pracy':'Start work','Koniec pracy':'End work','Początek przerwy':'Start break','Koniec przerwy':'End break','Przerwa':'Break','Tankowanie':'Refuelling','Start prywatny':'Start private use','Koniec prywatny':'End private use','Start serwis':'Start service','Koniec serwis':'End service','Start MOT':'Start MOT','Koniec MOT':'End MOT','Start odstawienie':'Start vehicle drop-off','Koniec odstawienie':'End vehicle drop-off'};
 function lbl(k){return LBL[k]||k}
 var cur=null,tmEdited=false,UN=null,ST=null;
 var PEND=null,CHKSAVED=false,START=false;
@@ -253,7 +267,8 @@ function renderStatus(s){
   var el=$('stat'),t=$('statT');
   if(!ST){el.style.display='none';return}
   el.style.display='flex';
-  if(ST.priv){el.className='pv';t.innerHTML='<b>PRIVATE USE</b><small>since '+esc(ST.priv.t)+' · remember “End private use”</small>';return}
+  if(ST.priv){var pk=ST.priv.kind||'Private use',pn=(pk==='Service'?'SERVICE':(pk==='Drop-off'?'VEHICLE DROP-OFF':'PRIVATE USE'));
+    el.className='pv';t.innerHTML='<b>'+pn+'</b><small>since '+esc(ST.priv.t)+' · remember to press “Other use” → End</small>';return}
   if(ST.open){
     var iso=ST.open.iso,hh=ST.open.t,since='',el2='';
     var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso),h=/^(\d{1,2}):(\d{2})/.exec(hh);
@@ -263,6 +278,7 @@ function renderStatus(s){
       if(mins>0&&mins<48*60)el2=' · '+Math.floor(mins/60)+':'+p2(mins%60)+' h';
     }else since='since '+hh;
     if(ST.brk){el.className='br';t.innerHTML='<b>ON BREAK</b><small>break since '+esc(ST.brk)+' · working '+esc(since+el2)+'</small>'}
+    else if(ST.open.mot){el.className='on';t.innerHTML='<b>MOT</b><small>'+esc(since+el2)+' · remember “Other use” → MOT → End</small>'}
     else{el.className='on';t.innerHTML='<b>WORKING</b><small>'+esc(since+el2)+' · remember “End work”</small>'}
   }else{
     el.className='';t.innerHTML='<b>Not started</b><small>Tap “Start work” when you begin</small>';
@@ -270,9 +286,38 @@ function renderStatus(s){
 }
 setInterval(function(){if(ST&&ST.open&&FORMSHOWN)renderStatus()},60000);
 
+var OTI={prywatny:'Private use: not counted as work hours. Miles are private (deducted).',serwis:'Service: not counted as work hours (unpaid). Miles are saved as “service”, not private.',MOT:'MOT: counts as work hours.',odstawienie:'Vehicle drop-off before your holiday: travel time is not counted as work hours.'};
+var OTK=null,OTP=null;
+function fcMsg(c){
+  if(c==null||c<=10)return{cls:'',tip:''};
+  if(c<=11)return{cls:'w1',tip:'Try to get below 10.'};
+  if(c<=11.5)return{cls:'w2',tip:'Try to get down to 10.5.'};
+  return{cls:'w3',tip:'This is above the acceptable norm.'};
+}
+function fcNum(c){return String(c.toFixed(1)).replace('.',',')}
+function fcHtml(f,afterFill){
+  if(!f)return'';
+  var h='';
+  if(afterFill){
+    if(f.last!=null)h+='This refuelling: <b>'+fcNum(f.last)+' l/100 km</b><br>';
+    else if(f.lastBad)h+='This refuelling could not be calculated – check the litres and mileage you entered.<br>';
+    else if(f.firstFill)h+='First refuelling recorded – your consumption will show after the next one.<br>';
+  }
+  if(f.month!=null){var m=fcMsg(f.month);h+=(m.tip?'Your average fuel consumption is currently <b>'+fcNum(f.month)+' l/100 km</b>. '+m.tip:'Month average: <b>'+fcNum(f.month)+' l/100 km</b>')}
+  return h;
+}
+function renderFuel(f){
+  var el=$('fuelCard');
+  if(!f||f.month==null){el.style.display='none';return}
+  var m=fcMsg(f.month);
+  el.className='fc '+m.cls;
+  el.innerHTML='⛽ '+(m.tip?'Your average fuel consumption is currently <b>'+fcNum(f.month)+' l/100 km</b>. '+m.tip:'Fuel – month average: <b>'+fcNum(f.month)+' l/100 km</b>');
+  el.style.display='block';
+  ss('ft_fuel',JSON.stringify(f));
+}
 function init(res){
   if(!res||!res.name){badKey('Invalid code. Check it and try again.');return}
-  NAME=res.name;ITEMS=res.checks||[];$('who').textContent=NAME;renderStatus(res.status);
+  NAME=res.name;ITEMS=res.checks||[];$('who').textContent=NAME;renderStatus(res.status);renderFuel(res.fuel);
   ss('ft_k',KEY);ss('ft_n',NAME);ss('ft_vl',JSON.stringify(res.vehicles||[]));ss('ft_ci',JSON.stringify(ITEMS));
   var keep=curVeh()||st('ft_v');
   box('vBox',res.vehicles,keep,'np. AB12 CDE');
@@ -293,7 +338,7 @@ if(KEY){
   var cn=st('ft_n');
   if(cn){
     // formularz od razu z zapamiętanych danych, sprawdzenie kodu dzieje się w tle
-    NAME=cn;ITEMS=parse(st('ft_ci'));$('who').textContent=NAME;
+    NAME=cn;ITEMS=parse(st('ft_ci'));$('who').textContent=NAME;try{renderFuel(JSON.parse(st('ft_fuel')||'null'))}catch(e){}
     box('vBox',parse(st('ft_vl')),st('ft_v'),'np. AB12 CDE');
     view('form');
   }
@@ -327,7 +372,7 @@ function clearEvent(){
   cur=null;tmEdited=false;
   [].forEach.call(document.querySelectorAll('#ev button,#ch button'),function(b){b.classList.remove('on')});
   $('fz').style.display='none';$('etaBox').style.display='none';$('unBox').style.display='none';$('brBox').style.display='none';
-  $('lm').style.display='none';resetUn();resetBr();renderCk();
+  $('lm').style.display='none';$('otBox').style.display='none';resetUn();resetBr();renderCk();
 }
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('#ckredo');if(a){e.preventDefault();openStartCheck()}});
 document.addEventListener('change',function(e){if(e.target&&e.target.id==='vBoxx'){if(PEND&&PEND.veh!==curVeh()){PEND=null;CHKSAVED=false}renderCk()}});
@@ -335,6 +380,7 @@ function pick(k){
   cur=E.filter(function(e){return e.k===k})[0];
   [].forEach.call(document.querySelectorAll('#ev button'),function(b){b.classList.toggle('on',b.getAttribute('data-k')===k)});
   $('fz').style.display=cur.fuel?'block':'none';$('lm').style.display=cur.mil?'block':'none';
+  $('otBox').style.display=(k==='OTHER')?'block':'none';if(k==='OTHER')otInit();
   $('brBox').style.display=cur.brk?'block':'none';if(!cur.brk)resetBr();
   $('etaBox').style.display=(k==='Start pracy')?'block':'none';
   if(k!=='Start pracy')$('eta').value='';
@@ -350,6 +396,19 @@ $('ch').onclick=function(e){var b=e.target.closest('button');if(!b)return;$('fue
   [].forEach.call(document.querySelectorAll('#ch button'),function(x){x.classList.toggle('on',x===b)})};
 $('fuel').oninput=function(){[].forEach.call(document.querySelectorAll('#ch button'),function(x){x.classList.remove('on')})};
 $('tm').oninput=function(){tmEdited=true};
+function otShow(){
+  [].forEach.call(document.querySelectorAll('#otKind button'),function(x){x.classList.toggle('on',x.getAttribute('data-o')===OTK)});
+  [].forEach.call(document.querySelectorAll('#otPh button'),function(x){x.classList.toggle('on',x.getAttribute('data-p')===OTP)});
+  $('otInfo').textContent=OTK?OTI[OTK]:'';
+}
+function otInit(){
+  OTK=null;OTP=null;
+  if(ST&&ST.priv){OTP='Koniec';OTK=ST.priv.kind==='Service'?'serwis':(ST.priv.kind==='Drop-off'?'odstawienie':'prywatny')}
+  else if(ST&&ST.open&&ST.open.mot){OTP='Koniec';OTK='MOT'}
+  otShow();
+}
+$('otKind').onclick=function(e){var b=e.target.closest('button');if(!b)return;OTK=b.getAttribute('data-o');otShow()};
+$('otPh').onclick=function(e){var b=e.target.closest('button');if(!b)return;OTP=b.getAttribute('data-p');otShow()};
 
 function resetBr(){
   $('brIn').value='';[].forEach.call(document.querySelectorAll('#brCh button'),function(x){x.classList.remove('on')});
@@ -400,6 +459,7 @@ function renderWeek(res){
   var ded=v.ded+v.fine+v.adv+(v.cash||0);
   h+='<div class="sm"><div class="k"><div>Hours<b>'+esc(v.hours)+'</b></div><div>Miles<b>'+v.miles+'</b></div><div>Pay<b>'+fm(v.pay)+'</b></div></div><hr>';
   if(v.bonus>0)h+='<div class="ln pl"><span>Extras: bonus</span><b>+'+fm(v.bonus)+'</b></div>';
+  if(v.fuelBonus>0)h+='<div class="ln pl"><span>Fuel bonus (month average ≤ '+v.target+' l/100 km)</span><b>+'+fm(v.fuelBonus)+'</b></div>';
   if(ded>0){
     h+='<div class="ln mn"><span>Deductions</span><b>−'+fm(ded)+'</b></div>';
     if(v.ded>0)h+='<div class="sl"><span>private miles ('+v.priv+' mil)</span><span>−'+fm(v.ded)+'</span></div>';
@@ -408,6 +468,10 @@ function renderWeek(res){
     if(v.cash>0)h+='<div class="sl"><span>cash in hand (collected from customers)</span><span>−'+fm(v.cash)+'</span></div>';
   }
   h+='<div class="tot"><span>To be paid</span><span>'+fm(v.total)+'</span></div></div>';
+  if(v.cons!=null){
+    var fw=fcMsg(v.cons);
+    h+='<div class="card" style="margin-top:10px"><b>Fuel this week: '+fcNum(v.cons)+' l/100 km</b>'+(fw.tip?'<br>'+fw.tip:'')+'</div>';
+  }
   h+='<h3>Work days</h3>';
   v.days.forEach(function(d){
     if(!d.shifts.length&&!(d.bonus>0)&&!(d.cash>0))return;
@@ -432,6 +496,12 @@ $('send').onclick=function(){
   if(!$('dt').value)err.push('Enter the date');
   if(!$('tm').value)err.push('Enter the time');
   var mil=$('mil').value.replace(/\D/g,''),fuel=$('fuel').value.replace(',','.');
+  var evk=cur?cur.k:'';
+  if(cur&&cur.k==='OTHER'){
+    if(!OTK)err.push('Choose the kind of use');
+    if(!OTP)err.push('Choose Start or End');
+    if(OTK&&OTP)evk=OTP+' '+OTK;
+  }
   if(cur&&cur.mil&&!mil)err.push('Enter the mileage');
   var isStart=cur&&cur.k==='Start pracy';
   if(isStart){
@@ -449,7 +519,7 @@ $('send').onclick=function(){
   $('er').textContent='';$('send').disabled=true;$('send').textContent='Saving…';
   ss('ft_v',veh);
   var eta=$('eta').value;
-  var r={date:$('dt').value,time:$('tm').value,vehicle:veh,event:cur.k,
+  var r={date:$('dt').value,time:$('tm').value,vehicle:veh,event:evk,
     mileage:cur.mil?mil:'',fuel:cur.fuel?fuel:'',cost:cur.fuel?$('cost').value:'',unauth:unm,brk:brm};
   var cp=(isStart&&PEND)?PEND:null;
   var cbad=cp?ITEMS.filter(function(n){return cp.items[n]==='PROBLEM'}):[];
@@ -463,6 +533,11 @@ $('send').onclick=function(){
     $('dayw').innerHTML=cbad.length?'<div class="card warn"><b>⚠ Defects / missing:</b> '+esc(cbad.join(', '))+'<br>The office is warned in the Viber message below.</div>'
       :((r.event==='Koniec pracy'||r.event==='Tankowanie')
       ?'<p class="s">You will see your weekly pay in “My weekly pay” once the office has settled the week.</p>':'');
+    if(res&&r.event==='Tankowanie'&&res.fuel){
+      var fh=fcHtml(res.fuel,true);
+      if(fh){var fm0=res.fuel.month!=null?fcMsg(res.fuel.month):{cls:''};$('dayw').innerHTML+='<div class="fc '+fm0.cls+'" style="text-align:left;margin-top:10px"><b>⛽ Your fuel consumption</b><br>'+fh+'</div>'}
+      renderFuel(res.fuel);
+    }
     if(cp){PEND=null;CHKSAVED=false}
     var dd=r.date.split('-');
     showVb('['+dd[2]+'/'+dd[1]+'/'+dd[0]+', '+r.time+'] '+NAME+': '+(r.event==='Początek przerwy'?'Break':(r.event==='Przerwa'?'Break '+brm+' min':lbl(r.event)))
